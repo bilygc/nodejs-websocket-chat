@@ -1,14 +1,14 @@
 var socket = io();
 
-const params = new URLSearchParams(window.location.search);
+var params = new URLSearchParams(window.location.search);
 
-if(!params.has('name') || !params.has('room')){
+if(!params.has('nombre') || !params.has('sala')){
     window.location = 'index.html';
     throw new Error('The name and room are required');
 }
 
-const name = params.get('name');
-const room = params.get('room')
+var name = params.get('nombre');
+var room = params.get('sala')
 
 const data = {name, room};
 
@@ -18,7 +18,7 @@ socket.on('connect', function() {
         if(users.error){
             console.error(users.msg);
         }
-        console.log('users connected:', users);
+        renderUsers(users)
     });
 });
 
@@ -31,7 +31,7 @@ socket.on('disconnect', function() {
 
 
 // Enviar información
-// socket.emit('user-logout', {
+// socket.emit('create-msg', {
 //     usuario: 'Fernando',
 //     mensaje: 'Hola Mundo'
 // }, function(resp) {
@@ -39,10 +39,9 @@ socket.on('disconnect', function() {
 // });
 
 // Escuchar información
-socket.on('user-logout', function(user) {
-
-    console.log('Admin:', user);
-
+socket.on('create-msg', function(msg) {
+    renderMsgs(msg)
+    scrollBottom();
 });
 
 socket.on('private-msg', function(msg) {
@@ -53,6 +52,8 @@ socket.on('private-msg', function(msg) {
 
 socket.on('users-list', function(usersList) {
 
-    console.log('Usuarios conectados :', usersList);
+    //console.log('Usuarios conectados :', usersList);
+    renderUsers(usersList);
+
 
 });
